@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "524431545412",
+    "project_id": "btl-android-4",
+    "storage_bucket": "btl-android-4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524431545412:android:e357f1b368c65c9d8e9811",
+        "android_client_info": {
+          "package_name": "an4.com.example.btl_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn8DEwIysODoqQtFM9Sl3rnH5QTxIWxIw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
