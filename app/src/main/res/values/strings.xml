@@ -1,3 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BTL_Android</string>
+    <string-array name="loaiHP_array">
+        <item>Ngoại ngữ</item>
+        <item>Lý luận chính trị</item>
+        <item>Khoa học xã hội và nhân văn</item>
+        <item>Khoa học tự nhiên-Toán học-Tin học</item>
+        <item>Giáo dục thể chất</item>
+        <item>Giáo dục quốc phòng an ninh</item>
+        <item>Kiến thức cơ sở ngành</item>
+        <item>Kiến thức chuyên ngành</item>
+    </string-array>
+    <string-array name="hocKy_array">
+        <item>Học Kỳ 1</item>
+        <item>Học Kỳ 2</item>
+        <item>Học Kỳ 3</item>
+        <item>Học Kỳ 4</item>
+        <item>Học Kỳ 5</item>
+        <item>Học Kỳ 6</item>
+        <item>Học Kỳ 7</item>
+        <item>Học Kỳ 8</item>
+    </string-array>
 </resources>

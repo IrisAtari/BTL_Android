@@ -5,6 +5,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
 
         // Toolbar (nếu có trong layout)
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // Adapter
         CourseAdapter adapter = new CourseAdapter(courses, course -> {
             // Xử lý click: ví dụ hiển thị Toast
-            Toast.makeText(MainActivity.this, "Chọn: " + course.getTitle(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Chọn: " + course.getMaHP(), Toast.LENGTH_SHORT).show();
         });
         rvCourses.setAdapter(adapter);
 

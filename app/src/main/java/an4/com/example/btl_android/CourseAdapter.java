@@ -2,10 +2,8 @@ package an4.com.example.btl_android;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +32,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.VH>{
     @Override
     public void onBindViewHolder(VH holder, int position) {
         Course c = items.get(position);
-        holder.tvTitle.setText(c.getTitle());
-        holder.tvSub.setText(c.getSub());
+        holder.tvTitle.setText(c.getMaHP());
+        String subText = c.getTenHP()+"-"+c.getTongTinChi()+"-"+c.getHocKy();
+        holder.tvSub.setText(subText);
 
         holder.card.setOnClickListener(v -> {
             if (listener != null) listener.onClick(c);
