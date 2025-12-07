@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         rvCourses = findViewById(R.id.rv_courses);
 
         // Sample data
-        List<Course> courses = new ArrayList<>();
+        ArrayList<Course> courses = new ArrayList<>();
         courses.add(new Course("Phát triển ứng dụng di động", "Tự chọn - Học Kỳ 7"));
         courses.add(new Course("Lập trình Java nâng cao", "Tự chọn - Học Kỳ 7"));
         courses.add(new Course("Đồ hoạ máy tính", "Tự chọn - Học Kỳ 5"));

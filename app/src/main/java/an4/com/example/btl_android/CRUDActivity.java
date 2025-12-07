@@ -2,7 +2,10 @@ package an4.com.example.btl_android;
 
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.util.Log;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -41,6 +45,7 @@ public class CRUDActivity extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     EditText editTMaHP, editTTenHP, editTTongTinChi, editTSearchMaHP;
+    SearchView searchViewMaHP;
     Button btnAdd,  btnUpdate, btnDelete, btnSearch;
     Spinner spinnerLoaiHP;
     Spinner spinnerHocKy;
@@ -49,6 +54,7 @@ public class CRUDActivity extends AppCompatActivity {
     String HocKy = null;
     private static final String TAG = "MyActivity";
     ArrayList<Course> arrayListHocPhan = new ArrayList<Course>();
+    CourseAdapter courseAdapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,23 @@ public class CRUDActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         InitiateUIItems();
+
+        searchViewMaHP.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //courseAdapter.getFilter().filter(newText);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                courseAdapter.getFilter().filter(query);
+                Log.d(TAG,"Finish filter with: "+courseAdapter.getAllItems().size());
+                for (Course courseInList:  courseAdapter.getAllItems()) {
+                    Log.d(TAG, courseInList.getMaHP());
+                }
+                return false;
+            }
+        });
 
         spinnerLoaiHP.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -91,6 +114,7 @@ public class CRUDActivity extends AppCompatActivity {
                 HocPhan.put("TongTinChi", editTTongTinChi.getText().toString());
                 HocPhan.put("LoaiHP",LoaiHP);
                 HocPhan.put("HocKy",HocKy);
+
                 db.collection("DanhSachHocPhan").document(editTMaHP.getText().toString())
                         .set(HocPhan)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -98,6 +122,7 @@ public class CRUDActivity extends AppCompatActivity {
                             public void onSuccess(Void aVoid) {
                                 Log.d(TAG, "DocumentSnapshot successfully written!");
                                 MakeToast("Thêm học phần thành công");
+                                courseAdapter.notifyDataSetChanged();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -116,35 +141,26 @@ public class CRUDActivity extends AppCompatActivity {
             }
         });
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String MaHPInput =  editTSearchMaHP.getText().toString();
 
-                DocumentReference docRef = db.collection("DanhSachHocPhan").document(MaHPInput);
-                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            } else {
-                                Log.d(TAG, "No such document");
-                                MakeToast("Không tìm thấy học phần!");
-                            }
-                        } else {
-                            Log.d(TAG, "get failed with ", task.getException());
-                        }
-                    }
-                });
-            }
-        });
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                db.collection("DanhSachHocPhan").document(editTMaHP.getText().toString())
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                courseAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error deleting document", e);
+                            }
+                        });
             }
         });
 
@@ -162,12 +178,15 @@ public class CRUDActivity extends AppCompatActivity {
         editTMaHP = findViewById(R.id.editTMaHP);
         editTTenHP = findViewById(R.id.editTTenHP);
         editTTongTinChi = findViewById(R.id.editTTongTinChi);
-        editTSearchMaHP = findViewById(R.id.editTSearchMaHP);
+        //editTSearchMaHP = findViewById(R.id.editTSearchMaHP);
+
+        searchViewMaHP = findViewById(R.id.searchViewMaHP);
+        searchViewMaHP.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
         btnAdd =  findViewById(R.id.btnAdd);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnDelete = findViewById(R.id.btnDelete);
-        btnSearch =  findViewById(R.id.btnSearch);
+        //btnSearch =  findViewById(R.id.btnSearch);
 
         spinnerLoaiHP = findViewById(R.id.spinnerLoaiHP);
         ArrayAdapter<CharSequence> arrayAdapterLoaiHP = ArrayAdapter.createFromResource(
@@ -215,16 +234,15 @@ public class CRUDActivity extends AppCompatActivity {
         rvCourses.addItemDecoration(divider);
 
         // Adapter
-        CourseAdapter adapter = new CourseAdapter(arrayListHocPhan, course -> {
+        courseAdapter = new CourseAdapter(arrayListHocPhan, course -> {
             // Xử lý click: ví dụ hiển thị Toast
             Toast.makeText(CRUDActivity.this, "Chọn: " + course.getMaHP(), Toast.LENGTH_SHORT).show();
             editTMaHP.setText(course.getMaHP());
             editTTenHP.setText(course.getTenHP());
             editTTongTinChi.setText(course.getTongTinChi());
-
         });
-        rvCourses.setAdapter(adapter);
-
+        rvCourses.setAdapter(courseAdapter);
+        courseAdapter.notifyDataSetChanged();
     }
 
     private void MakeToast(String message) {
