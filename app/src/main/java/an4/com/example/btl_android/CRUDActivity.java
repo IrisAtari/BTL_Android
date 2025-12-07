@@ -49,6 +49,7 @@ public class CRUDActivity extends AppCompatActivity {
     String HocKy = null;
     private static final String TAG = "MyActivity";
     ArrayList<Course> arrayListHocPhan = new ArrayList<Course>();
+    CourseAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +87,23 @@ public class CRUDActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Map<String, Object> HocPhan = new HashMap<>();
-                HocPhan.put("MaHP", editTMaHP.getText().toString());
-                HocPhan.put("TenHP", editTTenHP.getText().toString());
-                HocPhan.put("TongTinChi", editTTongTinChi.getText().toString());
-                HocPhan.put("LoaiHP",LoaiHP);
-                HocPhan.put("HocKy",HocKy);
-                db.collection("DanhSachHocPhan").document(editTMaHP.getText().toString())
+                String maHP = editTMaHP.getText().toString();
+                String tenHP = editTTenHP.getText().toString();
+                String tongTinChi = editTTongTinChi.getText().toString();
+
+                HocPhan.put("maHP", maHP);
+                HocPhan.put("tenHP", tenHP);
+                HocPhan.put("tongTinChi", tongTinChi);
+                HocPhan.put("loaiHP",LoaiHP);
+                HocPhan.put("hocKy",HocKy);
+                db.collection("DanhSachHocPhan").document(maHP)
                         .set(HocPhan)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Log.d(TAG, "DocumentSnapshot successfully written!");
                                 MakeToast("Thêm học phần thành công");
+                                loadData();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -112,7 +118,30 @@ public class CRUDActivity extends AppCompatActivity {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String maHP = editTMaHP.getText().toString();
+                Map<String, Object> HocPhan = new HashMap<>();
+                HocPhan.put("tenHP", editTTenHP.getText().toString());
+                HocPhan.put("tongTinChi", editTTongTinChi.getText().toString());
+                HocPhan.put("loaiHP", LoaiHP);
+                HocPhan.put("hocKy", HocKy);
 
+                db.collection("DanhSachHocPhan").document(maHP)
+                        .update(HocPhan)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                MakeToast("Cập nhật học phần thành công");
+                                loadData();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                                MakeToast("Cập nhật học phần thất bại");
+                            }
+                        });
             }
         });
 
@@ -120,31 +149,58 @@ public class CRUDActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String MaHPInput =  editTSearchMaHP.getText().toString();
+                if (MaHPInput.isEmpty()) {
+                    loadData();
+                    return;
+                }
 
-                DocumentReference docRef = db.collection("DanhSachHocPhan").document(MaHPInput);
-                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            } else {
-                                Log.d(TAG, "No such document");
-                                MakeToast("Không tìm thấy học phần!");
+                db.collection("DanhSachHocPhan").whereEqualTo("maHP", MaHPInput)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    arrayListHocPhan.clear();
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Course tempCourse = document.toObject(Course.class);
+                                        arrayListHocPhan.add(tempCourse);
+                                    }
+                                    adapter.notifyDataSetChanged();
+                                    if(arrayListHocPhan.isEmpty()){
+                                        MakeToast("Không tìm thấy học phần nào");
+                                    }
+                                } else {
+                                    Log.d(TAG, "Error getting documents: ", task.getException());
+                                }
                             }
-                        } else {
-                            Log.d(TAG, "get failed with ", task.getException());
-                        }
-                    }
-                });
+                        });
             }
         });
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String maHP = editTMaHP.getText().toString();
+                db.collection("DanhSachHocPhan").document(maHP)
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                MakeToast("Xóa học phần thành công");
+                                loadData();
+                                editTMaHP.setText("");
+                                editTTenHP.setText("");
+                                editTTongTinChi.setText("");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error deleting document", e);
+                                MakeToast("Xóa học phần thất bại");
+                            }
+                        });
             }
         });
 
@@ -189,22 +245,7 @@ public class CRUDActivity extends AppCompatActivity {
 
         rvCourses = findViewById(R.id.rv_courses);
 
-        db.collection("DanhSachHocPhan")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Course tempCourse = document.toObject(Course.class);
-                                arrayListHocPhan.add(tempCourse);
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+        loadData();
 
         // LayoutManager: vertical list
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -215,7 +256,7 @@ public class CRUDActivity extends AppCompatActivity {
         rvCourses.addItemDecoration(divider);
 
         // Adapter
-        CourseAdapter adapter = new CourseAdapter(arrayListHocPhan, course -> {
+        adapter = new CourseAdapter(arrayListHocPhan, course -> {
             // Xử lý click: ví dụ hiển thị Toast
             Toast.makeText(CRUDActivity.this, "Chọn: " + course.getMaHP(), Toast.LENGTH_SHORT).show();
             editTMaHP.setText(course.getMaHP());
@@ -225,6 +266,27 @@ public class CRUDActivity extends AppCompatActivity {
         });
         rvCourses.setAdapter(adapter);
 
+    }
+
+    private void loadData() {
+        db.collection("DanhSachHocPhan")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            arrayListHocPhan.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Course tempCourse = document.toObject(Course.class);
+                                arrayListHocPhan.add(tempCourse);
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 
     private void MakeToast(String message) {

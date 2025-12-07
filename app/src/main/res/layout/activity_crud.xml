@@ -151,17 +151,26 @@
                 android:layout_weight="1"
                 android:text="Delete" />
 
+            <Button
+                android:id="@+id/btnSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Search" />
+
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <SearchView
-                android:id="@+id/searchViewMaHP"
+            <EditText
+                android:id="@+id/editTSearchMaHP"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:queryHint="Tìm kiếm theo mã học phần" />
+                android:ems="10"
+                android:hint="Tìm kiếm theo mã học phần"
+                android:inputType="text" />
 
         </TableRow>
 
