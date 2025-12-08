@@ -148,32 +148,46 @@ public class CRUDActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String MaHPInput =  editTSearchMaHP.getText().toString();
-                if (MaHPInput.isEmpty()) {
+                String inputConstrain = editTSearchMaHP.getText().toString().toLowerCase();
+                if (inputConstrain.isEmpty()) {
                     loadData();
                     return;
                 }
-
-                db.collection("DanhSachHocPhan").whereEqualTo("maHP", MaHPInput)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    arrayListHocPhan.clear();
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        Course tempCourse = document.toObject(Course.class);
-                                        arrayListHocPhan.add(tempCourse);
-                                    }
-                                    adapter.notifyDataSetChanged();
-                                    if(arrayListHocPhan.isEmpty()){
-                                        MakeToast("Không tìm thấy học phần nào");
-                                    }
-                                } else {
-                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                }
-                            }
-                        });
+                ArrayList<Course> filterArray  = new ArrayList<>();
+                loadData();
+                for (Course filterCourse: arrayListHocPhan) {
+                    if (filterCourse.getMaHP().toLowerCase().contains(inputConstrain)) {
+                        filterArray.add(filterCourse);
+                    }
+                }
+                if(filterArray.isEmpty()) {
+                    MakeToast("Không tìm thấy học phần nào");
+                } else {
+                    arrayListHocPhan.clear();
+                    arrayListHocPhan.addAll(filterArray);
+                    adapter.notifyDataSetChanged();
+                }
+//                adapter.notifyDataSetChanged();
+//                db.collection("DanhSachHocPhan").whereEqualTo("maHP", inputConstrain)
+//                        .get()
+//                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                if (task.isSuccessful()) {
+//                                    arrayListHocPhan.clear();
+//                                    for (QueryDocumentSnapshot document : task.getResult()) {
+//                                        Course tempCourse = document.toObject(Course.class);
+//                                        arrayListHocPhan.add(tempCourse);
+//                                    }
+//                                    adapter.notifyDataSetChanged();
+//                                    if(arrayListHocPhan.isEmpty()){
+//                                        MakeToast("Không tìm thấy học phần nào");
+//                                    }
+//                                } else {
+//                                    Log.d(TAG, "Error getting documents: ", task.getException());
+//                                }
+//                            }
+//                        });
             }
         });
 
@@ -289,6 +303,27 @@ public class CRUDActivity extends AppCompatActivity {
                 });
     }
 
+//    private ArrayList<Course> GetAllCourse() {
+//        ArrayList<Course> arrCourse = new ArrayList<>();
+//        db.collection("DanhSachHocPhan")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                Log.d(TAG, document.getId() + " => " + document.getData());
+//                                Course tempCourse = document.toObject(Course.class);
+//                                arrCourse.add(tempCourse);
+//                            }
+//                            //adapter.notifyDataSetChanged();
+//                        } else {
+//                            Log.d(TAG, "Error getting documents: ", task.getException());
+//                        }
+//                    }
+//                });
+//        return arrCourse;
+//    }
     private void MakeToast(String message) {
         Toast t =Toast.makeText(CRUDActivity.this, message, Toast.LENGTH_SHORT);
         t.setGravity(Gravity.CENTER,0,0);
