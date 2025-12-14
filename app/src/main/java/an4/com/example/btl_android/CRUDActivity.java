@@ -47,9 +47,9 @@ public class CRUDActivity extends AppCompatActivity {
     RecyclerView rvCourses;
     String LoaiHP = null;
     String HocKy = null;
-    private static final String TAG = "MyActivity";
+    private static final String TAG = "CRUD Activity";
     ArrayList<Course> arrayListHocPhan = new ArrayList<Course>();
-    CourseAdapter adapter;
+    CourseAdapter courseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +154,7 @@ public class CRUDActivity extends AppCompatActivity {
                     return;
                 }
                 ArrayList<Course> filterArray  = new ArrayList<>();
-                loadData();
+                //loadData();
                 for (Course filterCourse: arrayListHocPhan) {
                     if (filterCourse.getMaHP().toLowerCase().contains(inputConstrain)) {
                         filterArray.add(filterCourse);
@@ -165,7 +165,7 @@ public class CRUDActivity extends AppCompatActivity {
                 } else {
                     arrayListHocPhan.clear();
                     arrayListHocPhan.addAll(filterArray);
-                    adapter.notifyDataSetChanged();
+                    courseAdapter.notifyDataSetChanged();
                 }
 //                adapter.notifyDataSetChanged();
 //                db.collection("DanhSachHocPhan").whereEqualTo("maHP", inputConstrain)
@@ -218,9 +218,6 @@ public class CRUDActivity extends AppCompatActivity {
             }
         });
 
-
-
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -270,16 +267,14 @@ public class CRUDActivity extends AppCompatActivity {
         rvCourses.addItemDecoration(divider);
 
         // Adapter
-        adapter = new CourseAdapter(arrayListHocPhan, course -> {
+        courseAdapter = new CourseAdapter(arrayListHocPhan, course -> {
             // Xử lý click: ví dụ hiển thị Toast
             Toast.makeText(CRUDActivity.this, "Chọn: " + course.getMaHP(), Toast.LENGTH_SHORT).show();
             editTMaHP.setText(course.getMaHP());
             editTTenHP.setText(course.getTenHP());
             editTTongTinChi.setText(course.getTongTinChi());
-
         });
-        rvCourses.setAdapter(adapter);
-
+        rvCourses.setAdapter(courseAdapter);
     }
 
     private void loadData() {
@@ -295,7 +290,7 @@ public class CRUDActivity extends AppCompatActivity {
                                 Course tempCourse = document.toObject(Course.class);
                                 arrayListHocPhan.add(tempCourse);
                             }
-                            adapter.notifyDataSetChanged();
+                            courseAdapter.notifyDataSetChanged();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
