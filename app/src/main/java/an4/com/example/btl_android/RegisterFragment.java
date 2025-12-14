@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,29 +25,26 @@ import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link CourseListFragment#newInstance} factory method to
+ * Use the {@link RegisterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CourseListFragment extends Fragment {
+public class RegisterFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    RecyclerView fragRvCourses;
+    ArrayList<Course> arrayListHocPhan = new ArrayList<>();
+    CourseAdapter courseAdapter = null;
 
+    private final String TAG =  "RegFragment";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    Spinner spinLoaiHP;
-    Spinner spinHocKy;
-    RecyclerView fragRvCourses;
-    ArrayList<Course> arrayListHocPhan = new ArrayList<Course>();
-    CourseAdapter courseAdapter = null;
 
-    private final String TAG = "Course list fragment";
-
-    public CourseListFragment() {
+    public RegisterFragment() {
         // Required empty public constructor
     }
 
@@ -58,11 +54,11 @@ public class CourseListFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment CourseListFragment.
+     * @return A new instance of fragment RegisterFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CourseListFragment newInstance(String param1, String param2) {
-        CourseListFragment fragment = new CourseListFragment();
+    public static RegisterFragment newInstance(String param1, String param2) {
+        RegisterFragment fragment = new RegisterFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -77,10 +73,8 @@ public class CourseListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-//        loadData();
-//        InitUIItems();
     }
+
     private void loadData() {
         db.collection("DanhSachHocPhan")
                 .get()
@@ -103,7 +97,7 @@ public class CourseListFragment extends Fragment {
     }
 
     private void InitUIItems (View view) {
-        fragRvCourses =  view.findViewById(R.id.frag_rv_courses);
+        fragRvCourses =  view.findViewById(R.id.reg_rv_courses);
         // LayoutManager: vertical list
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         fragRvCourses.setLayoutManager(layoutManager);
@@ -119,35 +113,17 @@ public class CourseListFragment extends Fragment {
 
         });
         fragRvCourses.setAdapter(courseAdapter);
-
-        spinLoaiHP = view.findViewById(R.id.spinLoaiHP);
-        ArrayAdapter<CharSequence> arrayAdapterLoaiHP = ArrayAdapter.createFromResource(
-                this.getContext(),
-                R.array.loaiHP_array,
-                android.R.layout.simple_spinner_item
-        );
-        arrayAdapterLoaiHP.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-        spinLoaiHP.setAdapter(arrayAdapterLoaiHP);
-
-        spinHocKy = view.findViewById(R.id.spinHocKy);
-        ArrayAdapter<CharSequence> arrayAdapterHocKy = ArrayAdapter.createFromResource(
-                this.getContext(),
-                R.array.hocKy_array,
-                android.R.layout.simple_spinner_item
-        );
-        arrayAdapterHocKy.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-        spinHocKy.setAdapter(arrayAdapterHocKy);
-        Log.d("TabFrag", "Init Tab fragment" + view.toString());
+        //Log.d("TabFrag", "Init Tab fragment" + view.toString());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_course_list, container, false);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
 
         loadData();
         InitUIItems(view);
-        // Inflate the layout for this fragment
         return view;
     }
 }

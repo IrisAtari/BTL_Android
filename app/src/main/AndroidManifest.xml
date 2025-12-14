@@ -12,13 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".TabbedActivity"
-            android:exported="false" />
+            android:name=".CRUDActivity"
+            android:exported="false">
+
+        </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false">
+        </activity>
         <activity
-            android:name=".CRUDActivity"
+            android:name=".TabbedActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
