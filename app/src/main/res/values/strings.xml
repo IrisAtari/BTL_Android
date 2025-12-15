@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">BTL_Android</string>
     <string-array name="loaiHP_array">
+        <item>Loại học phần</item>
         <item>Ngoại ngữ</item>
         <item>Lý luận chính trị</item>
         <item>Khoa học xã hội và nhân văn</item>
@@ -12,6 +13,7 @@
         <item>Kiến thức chuyên ngành</item>
     </string-array>
     <string-array name="hocKy_array">
+        <item>Học Kỳ  </item>
         <item>Học Kỳ 1</item>
         <item>Học Kỳ 2</item>
         <item>Học Kỳ 3</item>

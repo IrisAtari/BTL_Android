@@ -14,12 +14,14 @@
         <Spinner
             android:id="@+id/spinLoaiHP"
             android:layout_width="match_parent"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:spinnerMode="dropdown" />
 
         <Spinner
             android:id="@+id/spinHocKy"
             android:layout_width="match_parent"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:spinnerMode="dropdown" />
 
         <Button
             android:id="@+id/btnResetFilter"

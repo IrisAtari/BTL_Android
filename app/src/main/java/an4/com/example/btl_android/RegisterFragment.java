@@ -40,11 +40,10 @@ public class RegisterFragment extends Fragment {
     private static final String PREFS_NAME = "CoursePrefs";
     private static final String KEY_SAVED_COURSES = "selectedCourses";
     private SharedCourseViewModel sharedViewModel;
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    //private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     RecyclerView fragRvCourses;
     ArrayList<Course> arrayListHocPhan = new ArrayList<>();
     CourseAdapter courseAdapter = null;
-
     Button btnSaveLocal, btnDeleteLocal, btnCalulateTotal;
     TextView textViewTotal;
 
@@ -65,27 +64,6 @@ public class RegisterFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    }
-
-    private void loadData() {
-        db.collection("DanhSachHocPhan")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            arrayListHocPhan.clear();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Course tempCourse = document.toObject(Course.class);
-                                arrayListHocPhan.add(tempCourse);
-                            }
-                            courseAdapter.notifyDataSetChanged();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
     }
 
     private void saveCoursesToLocal(ArrayList<Course> courses) {
@@ -130,6 +108,8 @@ public class RegisterFragment extends Fragment {
         // Optional: Clear the UI list as well
         arrayListHocPhan.clear();
         courseAdapter.notifyDataSetChanged();
+
+        sharedViewModel.deleteAllCourses();
 
         Toast.makeText(getContext(), "Đã xóa dữ liệu lưu trữ!", Toast.LENGTH_SHORT).show();
     }
@@ -207,6 +187,7 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_register, container, false);
 
@@ -215,9 +196,8 @@ public class RegisterFragment extends Fragment {
         sharedViewModel.getCourses().observe(getViewLifecycleOwner(), courses -> {
             // Update your local list
             arrayListHocPhan.clear();
-            loadCoursesFromLocal();
             arrayListHocPhan.addAll(courses);
-
+            loadCoursesFromLocal();
             // Refresh the adapter
             if (courseAdapter != null) {
                 courseAdapter.notifyDataSetChanged();

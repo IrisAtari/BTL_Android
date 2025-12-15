@@ -22,7 +22,9 @@ public class SharedCourseViewModel extends ViewModel {
             selectedCourses.setValue(currentList); // Trigger observers
         }
     }
-
+    public void deleteAllCourses() {
+        selectedCourses.setValue(new ArrayList<>());
+    }
     // Function to get the list (used by Receiver)
     public LiveData<ArrayList<Course>> getCourses() {
         return selectedCourses;
