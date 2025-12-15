@@ -37,25 +37,25 @@
             android:layout_weight="5">
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/btnSaveLocal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Save" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/btnDeleteLocal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Delete" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/btnCalulateTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Calculate" />
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/textViewTotal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Tổng Tiền"

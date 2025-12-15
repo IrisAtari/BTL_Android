@@ -20,20 +20,18 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
+        Fragment fragment;
+
         if (position == 0) {
-        CourseListFragment fragment = new CourseListFragment();
+            fragment = new CourseListFragment();
+        } else {
+            fragment = new RegisterFragment();
+        }
+        // Passing initial arguments
         Bundle args = new Bundle();
-        //args.putString("title", totalTabNumber.get(position));
+        ///args.putInt("tab_position", position); // Example data
         fragment.setArguments(args);
         return fragment;
-        }
-        else {
-            RegisterFragment fragment = new RegisterFragment();
-            Bundle args = new Bundle();
-            //args.putString("title", totalTabNumber.get(position));
-            fragment.setArguments(args);
-            return fragment;
-        }
     }
 
     @Override

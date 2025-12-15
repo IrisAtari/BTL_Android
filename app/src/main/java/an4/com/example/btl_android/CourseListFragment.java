@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
  */
 public class CourseListFragment extends Fragment {
 
+    private SharedCourseViewModel sharedViewModel;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     Button btnResetFilter;
     Spinner spinLoaiHP;
@@ -41,6 +44,7 @@ public class CourseListFragment extends Fragment {
     RecyclerView fragRvCourses;
     //ArrayList<Course> arrayListHocPhanFull = new ArrayList<Course>();
     ArrayList<Course> arrayListHocPhan = new ArrayList<>();
+    ArrayList<Course> arrayListRegister = new ArrayList<>();
     CourseAdapter courseAdapter = null;
 
     private final String TAG = "Course list fragment";
@@ -83,6 +87,8 @@ public class CourseListFragment extends Fragment {
 
     private void InitUIItems (@NonNull View view) {
 
+        sharedViewModel = new  ViewModelProvider(requireActivity()).get(SharedCourseViewModel.class);
+
         btnResetFilter =  view.findViewById(R.id.btnResetFilter);
         btnResetFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,8 +110,9 @@ public class CourseListFragment extends Fragment {
         courseAdapter = new CourseAdapter(arrayListHocPhan, course -> {
             // Xử lý click: ví dụ hiển thị Toast
             Toast.makeText(this.getContext(), "Chọn: " + course.getMaHP(), Toast.LENGTH_SHORT).show();
-            // TODO: link fragment data on click
+            sharedViewModel.addCourse(course);
         });
+
         fragRvCourses.setAdapter(courseAdapter);
 
         spinLoaiHP = view.findViewById(R.id.spinLoaiHP);
@@ -117,9 +124,11 @@ public class CourseListFragment extends Fragment {
         arrayAdapterLoaiHP.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         spinLoaiHP.setAdapter(arrayAdapterLoaiHP);
 
+        //spinLoaiHP.setOnItemClickListener();
         spinLoaiHP.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //LoadData();
                 FilterCourse(parent.getItemAtPosition(position).toString(), "LoaiHP");
             }
 
@@ -141,6 +150,7 @@ public class CourseListFragment extends Fragment {
         spinHocKy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //LoadData();
                 FilterCourse(parent.getItemAtPosition(position).toString(), "HocKy");
             }
 
@@ -157,20 +167,20 @@ public class CourseListFragment extends Fragment {
     private void FilterCourse(String inputConstrain, String inputType) {
 
         Log.d(TAG, "Filter = "+ inputConstrain);
-        inputConstrain = inputConstrain.toLowerCase();
+        //inputConstrain = inputConstrain.toLowerCase();
         if (inputConstrain.isEmpty() || inputType.isEmpty()) {
             LoadData();
             return;
         }
         ArrayList<Course> filterArray  = new ArrayList<>();
         for (Course filterCourse: arrayListHocPhan) {
-            if (inputType == "LoaiHP") {
-                if (filterCourse.getLoaiHP().toLowerCase().contains(inputConstrain)) {
+            if (inputType.equals("LoaiHP")) {
+                if (filterCourse.getLoaiHP().contains(inputConstrain)) {
                     filterArray.add(filterCourse);
                 }
             }
-            if (inputType == "HocKy")  {
-                if (filterCourse.getHocKy().toLowerCase().contains(inputConstrain)) {
+            if (inputType.equals("HocKy"))  {
+                if (filterCourse.getHocKy().contains(inputConstrain)) {
                     filterArray.add(filterCourse);
                 }
             }
@@ -179,6 +189,7 @@ public class CourseListFragment extends Fragment {
             Toast t = Toast.makeText(this.getContext(), "Không tìm thấy học phần", Toast.LENGTH_SHORT);
             t.setGravity(Gravity.CENTER,0,0);
             t.show();
+            LoadData();
         } else {
             arrayListHocPhan.clear();
             arrayListHocPhan.addAll(filterArray);
