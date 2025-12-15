@@ -19,7 +19,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashActivity.this, CRUDActivity.class);
+                Intent intent = new Intent(SplashActivity.this, TabbedActivity.class);
                 startActivity(intent);
                 finish();
             }
