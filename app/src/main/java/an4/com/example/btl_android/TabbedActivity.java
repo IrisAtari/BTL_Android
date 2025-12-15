@@ -1,7 +1,10 @@
 package an4.com.example.btl_android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +25,7 @@ public class TabbedActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
     ViewPager2 viewPager;
-
+    Button btnSwitchScreen;
     private final String TAG = "TabActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +35,6 @@ public class TabbedActivity extends AppCompatActivity {
 
         InitUIItems();
         Log.d(TAG,"Tab activity launched!");
-
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -45,6 +46,15 @@ public class TabbedActivity extends AppCompatActivity {
     private void InitUIItems() {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
+        btnSwitchScreen = findViewById(R.id.btnSwitchScreen);
+
+        btnSwitchScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent crudIntent = new Intent(TabbedActivity.this, CRUDActivity.class);
+                startActivity(crudIntent);
+            }
+        });
 
         ArrayList<String> tabTitle = new ArrayList<>();
         tabTitle.add("Danh sách Học Phần");

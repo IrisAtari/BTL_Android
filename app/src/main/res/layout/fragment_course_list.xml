@@ -14,12 +14,18 @@
         <Spinner
             android:id="@+id/spinLoaiHP"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="48dp" />
 
         <Spinner
             android:id="@+id/spinHocKy"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="48dp" />
+
+        <Button
+            android:id="@+id/btnResetFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hủy bộ lọc" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/frag_rv_courses"
@@ -34,12 +40,6 @@
             app:layout_constraintTop_toBottomOf="@id/section_header"
             tools:ignore="SpeakableTextPresentCheck"
             tools:listitem="@layout/item_course" />
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
 
     </LinearLayout>
 

@@ -49,6 +49,7 @@ public class CRUDActivity extends AppCompatActivity {
     String HocKy = null;
     private static final String TAG = "CRUD Activity";
     ArrayList<Course> arrayListHocPhan = new ArrayList<Course>();
+    //ArrayList<Course> arrayListHocPhanFULL = new ArrayList<>();
     CourseAdapter courseAdapter;
 
     @Override
@@ -103,7 +104,8 @@ public class CRUDActivity extends AppCompatActivity {
                             public void onSuccess(Void aVoid) {
                                 Log.d(TAG, "DocumentSnapshot successfully written!");
                                 MakeToast("Thêm học phần thành công");
-                                loadData();
+                                LoadData();
+                                //courseAdapter.notifyDataSetChanged();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -132,7 +134,8 @@ public class CRUDActivity extends AppCompatActivity {
                             public void onSuccess(Void aVoid) {
                                 Log.d(TAG, "DocumentSnapshot successfully updated!");
                                 MakeToast("Cập nhật học phần thành công");
-                                loadData();
+                                LoadData();
+                                //courseAdapter.notifyDataSetChanged();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -150,11 +153,11 @@ public class CRUDActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String inputConstrain = editTSearchMaHP.getText().toString().toLowerCase();
                 if (inputConstrain.isEmpty()) {
-                    loadData();
+                    LoadData();
                     return;
                 }
                 ArrayList<Course> filterArray  = new ArrayList<>();
-                //loadData();
+                //LoadData();
                 for (Course filterCourse: arrayListHocPhan) {
                     if (filterCourse.getMaHP().toLowerCase().contains(inputConstrain)) {
                         filterArray.add(filterCourse);
@@ -167,27 +170,6 @@ public class CRUDActivity extends AppCompatActivity {
                     arrayListHocPhan.addAll(filterArray);
                     courseAdapter.notifyDataSetChanged();
                 }
-//                adapter.notifyDataSetChanged();
-//                db.collection("DanhSachHocPhan").whereEqualTo("maHP", inputConstrain)
-//                        .get()
-//                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                if (task.isSuccessful()) {
-//                                    arrayListHocPhan.clear();
-//                                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                                        Course tempCourse = document.toObject(Course.class);
-//                                        arrayListHocPhan.add(tempCourse);
-//                                    }
-//                                    adapter.notifyDataSetChanged();
-//                                    if(arrayListHocPhan.isEmpty()){
-//                                        MakeToast("Không tìm thấy học phần nào");
-//                                    }
-//                                } else {
-//                                    Log.d(TAG, "Error getting documents: ", task.getException());
-//                                }
-//                            }
-//                        });
             }
         });
 
@@ -202,7 +184,8 @@ public class CRUDActivity extends AppCompatActivity {
                             public void onSuccess(Void aVoid) {
                                 Log.d(TAG, "DocumentSnapshot successfully deleted!");
                                 MakeToast("Xóa học phần thành công");
-                                loadData();
+                                LoadData();
+                                //courseAdapter.notifyDataSetChanged();
                                 editTMaHP.setText("");
                                 editTTenHP.setText("");
                                 editTTongTinChi.setText("");
@@ -256,7 +239,7 @@ public class CRUDActivity extends AppCompatActivity {
 
         rvCourses = findViewById(R.id.rv_courses);
 
-        loadData();
+        LoadData();
 
         // LayoutManager: vertical list
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -276,51 +259,37 @@ public class CRUDActivity extends AppCompatActivity {
         });
         rvCourses.setAdapter(courseAdapter);
     }
-
-    private void loadData() {
+    private void LoadData() {
         db.collection("DanhSachHocPhan")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            //arrayListHocPhanFULL.clear();
                             arrayListHocPhan.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Course tempCourse = document.toObject(Course.class);
+                                //arrayListHocPhanFULL.add(tempCourse);
                                 arrayListHocPhan.add(tempCourse);
+                                //courseAdapter.notifyItemInserted(arrayListHocPhanDisplay.size());
                             }
+                            //courseAdapter.notifyItemRangeInserted(0,arrayListHocPhanDisplay.size());
                             courseAdapter.notifyDataSetChanged();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
+
+    }
+    private void FilterCourse(String constrain) {
+
     }
 
-//    private ArrayList<Course> GetAllCourse() {
-//        ArrayList<Course> arrCourse = new ArrayList<>();
-//        db.collection("DanhSachHocPhan")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d(TAG, document.getId() + " => " + document.getData());
-//                                Course tempCourse = document.toObject(Course.class);
-//                                arrCourse.add(tempCourse);
-//                            }
-//                            //adapter.notifyDataSetChanged();
-//                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-//        return arrCourse;
-//    }
     private void MakeToast(String message) {
-        Toast t =Toast.makeText(CRUDActivity.this, message, Toast.LENGTH_SHORT);
+        Toast t = Toast.makeText(CRUDActivity.this, message, Toast.LENGTH_SHORT);
         t.setGravity(Gravity.CENTER,0,0);
         t.show();
     }

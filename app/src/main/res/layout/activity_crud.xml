@@ -14,20 +14,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="?attr/actionBarTheme" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/textView"
@@ -40,7 +27,7 @@
             <EditText
                 android:id="@+id/editTMaHP"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="text" />
@@ -67,7 +54,7 @@
                 <EditText
                     android:id="@+id/editTTenHP"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="text|textLongMessage|textMultiLine"
@@ -93,7 +80,7 @@
             <EditText
                 android:id="@+id/editTTongTinChi"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="number|numberDecimal" />
@@ -114,7 +101,7 @@
             <Spinner
                 android:id="@+id/spinnerLoaiHP"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1" />
 
         </TableRow>
@@ -134,14 +121,14 @@
             <Spinner
                 android:id="@+id/spinnerHocKy"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/btnAdd"
@@ -180,7 +167,7 @@
             <EditText
                 android:id="@+id/editTSearchMaHP"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:ems="10"
                 android:hint="Tìm kiếm theo mã học phần"
                 android:inputType="text" />
@@ -189,7 +176,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <!-- RecyclerView cho danh sách -->
             <androidx.recyclerview.widget.RecyclerView

@@ -9,10 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,19 +34,13 @@ import java.util.ArrayList;
  */
 public class CourseListFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    Button btnResetFilter;
     Spinner spinLoaiHP;
     Spinner spinHocKy;
     RecyclerView fragRvCourses;
-    ArrayList<Course> arrayListHocPhan = new ArrayList<Course>();
+    //ArrayList<Course> arrayListHocPhanFull = new ArrayList<Course>();
+    ArrayList<Course> arrayListHocPhan = new ArrayList<>();
     CourseAdapter courseAdapter = null;
 
     private final String TAG = "Course list fragment";
@@ -52,20 +49,9 @@ public class CourseListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CourseListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CourseListFragment newInstance(String param1, String param2) {
         CourseListFragment fragment = new CourseListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,15 +59,8 @@ public class CourseListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-//        loadData();
-//        InitUIItems();
     }
-    private void loadData() {
+    private void LoadData() {
         db.collection("DanhSachHocPhan")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -102,7 +81,16 @@ public class CourseListFragment extends Fragment {
                 });
     }
 
-    private void InitUIItems (View view) {
+    private void InitUIItems (@NonNull View view) {
+
+        btnResetFilter =  view.findViewById(R.id.btnResetFilter);
+        btnResetFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoadData();
+            }
+        });
+
         fragRvCourses =  view.findViewById(R.id.frag_rv_courses);
         // LayoutManager: vertical list
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
@@ -116,7 +104,7 @@ public class CourseListFragment extends Fragment {
         courseAdapter = new CourseAdapter(arrayListHocPhan, course -> {
             // Xử lý click: ví dụ hiển thị Toast
             Toast.makeText(this.getContext(), "Chọn: " + course.getMaHP(), Toast.LENGTH_SHORT).show();
-
+            // TODO: link fragment data on click
         });
         fragRvCourses.setAdapter(courseAdapter);
 
@@ -129,6 +117,18 @@ public class CourseListFragment extends Fragment {
         arrayAdapterLoaiHP.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         spinLoaiHP.setAdapter(arrayAdapterLoaiHP);
 
+        spinLoaiHP.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FilterCourse(parent.getItemAtPosition(position).toString(), "LoaiHP");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                LoadData();
+            }
+        });
+
         spinHocKy = view.findViewById(R.id.spinHocKy);
         ArrayAdapter<CharSequence> arrayAdapterHocKy = ArrayAdapter.createFromResource(
                 this.getContext(),
@@ -137,17 +137,63 @@ public class CourseListFragment extends Fragment {
         );
         arrayAdapterHocKy.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         spinHocKy.setAdapter(arrayAdapterHocKy);
-        Log.d("TabFrag", "Init Tab fragment" + view.toString());
+
+        spinHocKy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                FilterCourse(parent.getItemAtPosition(position).toString(), "HocKy");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                LoadData();
+            }
+        });
+
+
+        //Log.d("TabFrag", "Init Tab fragment" + view.toString());
     }
 
+    private void FilterCourse(String inputConstrain, String inputType) {
+
+        Log.d(TAG, "Filter = "+ inputConstrain);
+        inputConstrain = inputConstrain.toLowerCase();
+        if (inputConstrain.isEmpty() || inputType.isEmpty()) {
+            LoadData();
+            return;
+        }
+        ArrayList<Course> filterArray  = new ArrayList<>();
+        for (Course filterCourse: arrayListHocPhan) {
+            if (inputType == "LoaiHP") {
+                if (filterCourse.getLoaiHP().toLowerCase().contains(inputConstrain)) {
+                    filterArray.add(filterCourse);
+                }
+            }
+            if (inputType == "HocKy")  {
+                if (filterCourse.getHocKy().toLowerCase().contains(inputConstrain)) {
+                    filterArray.add(filterCourse);
+                }
+            }
+        }
+        if(filterArray.isEmpty()) {
+            Toast t = Toast.makeText(this.getContext(), "Không tìm thấy học phần", Toast.LENGTH_SHORT);
+            t.setGravity(Gravity.CENTER,0,0);
+            t.show();
+        } else {
+            arrayListHocPhan.clear();
+            arrayListHocPhan.addAll(filterArray);
+            courseAdapter.notifyDataSetChanged();
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_course_list, container, false);
 
-        loadData();
+        LoadData();
         InitUIItems(view);
-        // Inflate the layout for this fragment
+
         return view;
     }
 }
